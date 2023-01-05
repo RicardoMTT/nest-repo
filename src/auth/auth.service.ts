@@ -28,9 +28,10 @@ export class AuthService {
   async create(createUserDto: CreateUserDto) {
     try {
       const { password, ...userData } = createUserDto;
-
+      // TODO recibir foto
       const profile = await this.profileRepo.create({
         name: userData.fullName,
+
         ...userData,
       });
       const newProfile = await this.profileRepo.save(profile);
@@ -85,16 +86,11 @@ export class AuthService {
 
   private getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload); // Generacion del token (JWT)
-    console.log('token', token);
-
     return token;
   }
 
   private handleDBErrors(error: any): never {
     if (error.code === '23505') throw new BadRequestException(error.detail);
-
-    console.log(error);
-
     throw new InternalServerErrorException('Please check server logs');
   }
 }

@@ -1,9 +1,11 @@
+import { Pedido } from 'src/product/entities/pedido.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -34,6 +36,9 @@ export class User {
   @OneToOne(() => Profile)
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Pedido, (pedido) => pedido.usuario)
+  pedidos: Pedido[];
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {

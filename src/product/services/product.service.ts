@@ -1,8 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 // import { ReviewDto } from 'src/persona/dto/review.dto';
 import { Repository } from 'typeorm';
-import { ProductDto } from '../dto/product.dto';
 import { Product } from '../entities/product.entity';
 // import { Review } from '../entities/review.entity';
 
@@ -19,10 +22,8 @@ export class ProductService {
         id,
       },
     });
-    console.log(product, id);
     // if (product) {
     //   const review = this.reviewRepository.create(body);
-    //   console.log('review', review);
 
     //   //   review.product = product;
     //   //   await this.reviewRepository.save(review);
@@ -32,10 +33,9 @@ export class ProductService {
   }
 
   async saveProduct(body) {
-    const response = await this.productsRepository.save(body);
+    const product = await this.productsRepository.create(body);
 
-    console.log('response', response);
-
+    await this.productsRepository.save(product);
     return {
       ok: true,
     };
@@ -45,5 +45,60 @@ export class ProductService {
       relations: ['category'],
     });
     return products;
+  }
+
+  async getProductById(id: number) {
+    const product = await this.productsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['category'],
+    });
+    return product;
+  }
+
+  async updateProduct(id, productArg) {
+    const xd = await this.productsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    const product = await this.productsRepository.preload({
+      id,
+      ...productArg,
+    });
+
+    if (!product) {
+      throw new NotFoundException('product not exist');
+    }
+
+    try {
+      await this.productsRepository.save(product);
+      return product;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Unexpected error, check server logs',
+      );
+    }
+  }
+
+  async deleteProduct(id) {
+    const product = await this.productsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('product not exist');
+    }
+
+    try {
+      await this.productsRepository.remove(product);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Unexpected error, check server logs',
+      );
+    }
   }
 }

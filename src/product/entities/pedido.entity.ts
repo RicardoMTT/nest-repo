@@ -1,10 +1,13 @@
+import { User } from 'src/auth/entities/user.entity';
 import {
   Column,
   Entity,
-  ManyToMany,
   PrimaryGeneratedColumn,
-  JoinTable,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Detalle } from './detalle.entity';
 import { Product } from './product.entity';
 
 @Entity('pedido')
@@ -12,21 +15,25 @@ export class Pedido {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => Product)
-  @JoinTable({
-    name: 'pedidos_products',
-    joinColumn: {
-      name: 'pedido_id',
-    },
-    inverseJoinColumn: {
-      name: 'product_id',
-    },
-  })
-  product: Product[];
+  // @ManyToMany(() => Product, (product) => product.category)
+  // @JoinTable({
+  //   name: 'pedidos_products',
+  //   joinColumn: {
+  //     name: 'pedido_id',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'product_id',
+  //   },
+  // })
+  // products: Product[];
 
-  @Column('decimal')
-  quantity: number;
+  @OneToMany(() => Detalle, (detalle) => detalle.pedido)
+  detalles: Detalle[];
 
-  @Column('decimal')
-  price: number;
+  @ManyToOne(() => User, (user) => user.pedidos)
+  @JoinColumn({ name: 'user_id' })
+  usuario: User;
+
+  @Column()
+  fechaPedido: string;
 }

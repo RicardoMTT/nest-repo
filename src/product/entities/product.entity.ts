@@ -1,12 +1,12 @@
 import {
   Column,
   Entity,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
-import { Pedido } from './pedido.entity';
+import { Detalle } from './detalle.entity';
 
 @Entity('product')
 export class Product {
@@ -19,8 +19,14 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.product)
   category: Category;
 
-  @ManyToMany(() => Pedido)
-  pedido: Pedido[];
+  // @ManyToMany(() => Pedido, (pedido) => pedido.products)
+  // pedidos: Pedido[];
+
+  @OneToMany(() => Detalle, (detalle) => detalle.pedido)
+  detalles: Detalle[];
+
+  @Column()
+  descripcion: string;
 
   @Column()
   color: string;

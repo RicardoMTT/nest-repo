@@ -14,8 +14,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly userRepository: Repository<User>,
     configService: ConfigService,
   ) {
-    console.log('aea');
-
     super({
       ignoreExpiration: false, //Bloquear peticiones con tokens caducados, si se llama con token caducado retorna 401 o unauthorized
       secretOrKey: 'secret',
@@ -24,8 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User> {
-    console.log('validateeeee');
-
     const { id } = payload;
 
     const user = await this.userRepository.findOneBy({ id });

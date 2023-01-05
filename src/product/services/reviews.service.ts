@@ -18,10 +18,8 @@ export class ReviewsService {
         id,
       },
     });
-    console.log(product, id);
     // if (product) {
     //   const review = this.reviewRepository.create(body);
-    //   console.log('review', review);
 
     //   //   review.product = product;
     //   //   await this.reviewRepository.save(review);

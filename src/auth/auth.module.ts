@@ -29,7 +29,7 @@ import { PhotosController } from './photo.controller';
         return {
           secret: 'secret',
           signOptions: {
-            expiresIn: '60s',
+            expiresIn: '2h',
           },
         };
       },

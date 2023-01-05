@@ -9,15 +9,7 @@ import { PersonaModule } from './persona/persona.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TareaModule } from './tarea/tarea.module';
-import { Task } from './tarea/entities/tast.entity';
-import { Persona } from './persona/entities/persona.entity';
-import { User } from './auth/entities/user.entity';
 import { ProductModule } from './product/product.module';
-import { Product } from './product/entities/product.entity';
-import { Photo } from './auth/entities/photo.entity';
-import { Category } from './product/entities/category.entity';
-import { Pedido } from './product/entities/pedido.entity';
-import { Profile } from './auth/entities/profile.entity';
 
 @Module({
   imports: [
