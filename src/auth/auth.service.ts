@@ -15,6 +15,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { Profile } from './entities/profile.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Photo } from './entities/photo.entity';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +25,9 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Profile) private profileRepo: Repository<Profile>,
+    @InjectRepository(Photo) private photoRepo: Repository<Photo>,
     private readonly jwtService: JwtService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -30,8 +35,7 @@ export class AuthService {
       const { password, ...userData } = createUserDto;
       // TODO recibir foto
       const profile = await this.profileRepo.create({
-        name: userData.fullName,
-
+        genre: userData.genre,
         ...userData,
       });
       const newProfile = await this.profileRepo.save(profile);
@@ -52,8 +56,77 @@ export class AuthService {
       };
       // TODO: Retornar el JWT de acceso
     } catch (error) {
+      console.log('errror', error);
+
       this.handleDBErrors(error);
     }
+  }
+
+  async getPhotosByProfile(userId) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['profile'],
+    });
+
+    const res = await this.photoRepo.find({
+      where: {
+        profile: user.profile,
+      },
+    });
+    console.log('res', res);
+  }
+
+  async getUser(userId) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['profile'],
+    });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return {
+      user,
+    };
+  }
+  async updateUser(updateUserDto: UpdateUserDto, file, userId) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['profile'],
+    });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const photo = new Photo();
+
+    const response = await this.cloudinaryService.uploadImage(file);
+    photo.url = response.secure_url;
+    photo.profile = user.profile;
+    console.log('photo', photo);
+
+    const newPhotoInstance = await this.photoRepo.create(photo);
+    console.log('newPhotoInstance', newPhotoInstance);
+
+    await this.photoRepo.save(newPhotoInstance);
+    console.log('user', user);
+    console.log(updateUserDto);
+
+    const editedUser = Object.assign(user, updateUserDto);
+    console.log('editedUser', editedUser);
+
+    const editedUserSave = await this.userRepository.save(editedUser);
+
+    return {
+      ok: true,
+      user: editedUserSave,
+    };
   }
 
   async login(loginUserDto: LoginUserDto) {

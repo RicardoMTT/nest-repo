@@ -6,8 +6,10 @@ export class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
-  name: string;
+  @Column('varchar', {
+    default: 'test',
+  })
+  genre: string;
 
   @OneToMany(() => Photo, (photo) => photo.profile)
   photos: Photo[];

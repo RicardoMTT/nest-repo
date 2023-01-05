@@ -11,10 +11,11 @@ import { Profile } from './entities/profile.entity';
 import { Photo } from './entities/photo.entity';
 import { PhotosService } from './photo.service';
 import { PhotosController } from './photo.controller';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Module({
   controllers: [AuthController, PhotosController],
-  providers: [AuthService, JwtStrategy, PhotosService],
+  providers: [AuthService, JwtStrategy, PhotosService, CloudinaryService],
   imports: [
     ConfigModule,
 

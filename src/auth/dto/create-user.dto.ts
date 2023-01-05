@@ -22,5 +22,8 @@ export class CreateUserDto {
 
   @IsString()
   @MinLength(1)
+  genre: string;
+
+  @IsString()
   fullName: string;
 }
