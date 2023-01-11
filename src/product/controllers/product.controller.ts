@@ -8,7 +8,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateProductDto } from '../dto/product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
 import { ProductService } from '../services/product.service';
 
 @Controller('api/product')
@@ -28,6 +27,11 @@ export class ProductController {
   @Get(':id')
   async getProduct(@Param('id') id: number) {
     return this.productService.getProductById(id);
+  }
+
+  @Get('/products-by-category')
+  async getPrByCategory(@Body() idCategory: any) {
+    return this.productService.getProductByCategoryId(idCategory);
   }
 
   @Patch(':id')

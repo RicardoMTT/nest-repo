@@ -75,7 +75,9 @@ export class AuthService {
         profile: user.profile,
       },
     });
-    console.log('res', res);
+    return {
+      photos: res,
+    };
   }
 
   async getUser(userId) {
@@ -109,17 +111,12 @@ export class AuthService {
     const response = await this.cloudinaryService.uploadImage(file);
     photo.url = response.secure_url;
     photo.profile = user.profile;
-    console.log('photo', photo);
 
     const newPhotoInstance = await this.photoRepo.create(photo);
-    console.log('newPhotoInstance', newPhotoInstance);
 
     await this.photoRepo.save(newPhotoInstance);
-    console.log('user', user);
-    console.log(updateUserDto);
 
     const editedUser = Object.assign(user, updateUserDto);
-    console.log('editedUser', editedUser);
 
     const editedUserSave = await this.userRepository.save(editedUser);
 
