@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 // import { ReviewDto } from 'src/persona/dto/review.dto';
 import { Repository } from 'typeorm';
+import { Category } from '../entities/category.entity';
 import { Product } from '../entities/product.entity';
 // import { Review } from '../entities/review.entity';
 
@@ -14,6 +15,8 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async saveReview(id: number, body: any) {
@@ -54,7 +57,28 @@ export class ProductService {
       },
       relations: ['category'],
     });
+    if (!product) {
+      throw new NotFoundException({
+        status: 404,
+        message: 'Product not found',
+      });
+    }
     return product;
+  }
+
+  async getProductByCategoryId(categoryId) {
+    const { idCategory } = categoryId;
+    const categoryFound = await this.categoryRepository.findOne({
+      where: {
+        id: idCategory,
+      },
+      relations: ['product'],
+    });
+
+    return {
+      ok: true,
+      product: categoryFound.product,
+    };
   }
 
   async updateProduct(id, productArg) {
